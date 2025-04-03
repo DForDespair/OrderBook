@@ -87,9 +87,12 @@ class Order:
     @property 
     def filled_quantity(self):
         return self._initial_quantity - self._remaining_quantity
+    
+    def is_filled(self) -> bool:
+        return self._remaining_quantity == 0
         
     def fill_order(self, quantity: int):
-        if quantity > self.remaining_quantity():
+        if quantity > self.remaining_quantity:
             raise ValueError(f"Order {self.order_id} cannot be filled for more than its remaining quantity")
         self._remaining_quantity -= quantity
         

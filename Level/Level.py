@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List
 
 @dataclass
@@ -30,6 +30,13 @@ class LevelInfo:
         if quantity < 0:
             raise ValueError("quantity must be positive")
         self._quantity = quantity
+        
+    def add_quantity(self, quantity: int):
+        self.quantity = self.quantity +quantity
+        
+    def remove_quantity(self, quantity: int):
+        self._quantity = self.quantity - quantity
+    
     
     def __str__(self):
         return f"{self.quantity} @ {self.price}"
@@ -37,14 +44,26 @@ class LevelInfo:
     def __repr__(self):
         return f"LevelInfo({repr(self.price)}, {repr(self.quantity)})"
 
+@dataclass
 class LevelInfos:
-    level_info = List[LevelInfo]
+    levels: List[LevelInfo] = field(default_factory = list) ## without this, each LevelInfos will share the same list
+    reverse: bool = False
+    
+    
+    def add(self, level: LevelInfo):
+        self.levels.append(level)
+        self.sort()
+        
+    def sort(self):
+        self.levels.sort(key= lambda level: level.price, reverse=self.reverse)
+        
+    
     
 
 class OrderBookLevelInfos:
-    def __init__(self, bids: LevelInfo, asks: LevelInfo):
-        self.bids = bids
-        self.asks = asks
+    def __init__(self, bids: LevelInfos, asks: LevelInfos):
+        self._bids = bids
+        self._asks = asks
     
     @property
     def bids(self) -> LevelInfos:
@@ -53,3 +72,9 @@ class OrderBookLevelInfos:
     @property
     def asks(self) -> LevelInfos:
         return self._asks
+    
+    def __str__(self):
+        return f"Bids: {self._bids}\nAsks: {self._asks}"
+
+    def __repr__(self):
+        return f"OrderBookLevelInfos(bids={repr(self.bids)}, asks={repr(self.asks)})"
