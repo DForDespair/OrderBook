@@ -7,3 +7,6 @@ class OrderSide(Enum):
 class OrderType(Enum):
     GoodTillCancel = "goodTillCancel"
     FillAndKill = "fillAndKill"
+    FillOrKill = "fillOrKill"
+    GoodForDay = "goodForDay",
+    Market = "market"
