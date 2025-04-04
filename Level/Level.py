@@ -1,5 +1,8 @@
 from dataclasses import dataclass, field
-from typing import List
+from enum import Enum
+from typing import Deque, List
+
+from Order.Order import Order
 
 @dataclass
 class LevelInfo:
@@ -78,3 +81,25 @@ class OrderBookLevelInfos:
 
     def __repr__(self):
         return f"OrderBookLevelInfos(bids={repr(self.bids)}, asks={repr(self.asks)})"
+    
+class LevelAction(Enum):
+    ADD = "add"
+    REMOVE = "remove"
+    MATCH = "match"
+    
+@dataclass
+class LevelData:
+    price: float
+    quantity: int
+    
+    def update(self, qty: float, action: LevelAction):
+        if action == LevelAction.ADD:
+            self.quantity += qty
+            self.count += 1
+        elif action == LevelAction.REMOVE:
+            self.quantity -= qty
+            self.count -= 1
+        elif action == LevelAction.MATCH:
+            self.quantity -= qty
+
+        return self.quantity > 0 and self.count > 0

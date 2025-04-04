@@ -1,3 +1,5 @@
+import time
+import random
 from Order.Order import Order
 from Order.OrderEnums import OrderSide, OrderType
 from Orderbook.Orderbook import OrderBook
@@ -8,46 +10,36 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(message)s"
 )
 
-if __name__ == "__main__":
-    order_book = OrderBook()
+def generate_random_order(order_id: int) -> Order:
+    return Order(
+        _order_type=OrderType.GoodTillCancel,
+        _order_id=order_id,
+        _side=random.choice([OrderSide.BUY, OrderSide.SELL]),
+        _price=round(random.uniform(95.0, 105.0), 2),
+        _initial_quantity=random.randint(1, 10)
+    )
+
+def main():
+    ob = OrderBook(use_threads=True)
     order_id = 1
-    order_id2 = 2
-    order_id3 = 3
-    order_id4 = 4
-    order_buy = Order(
-        _order_type = OrderType.GoodTillCancel,
-        _order_id = order_id,
-        _side = OrderSide.BUY,
-        _price = 50,
-        _initial_quantity = 100
-    )
-    order_sell1 = Order(
-        _order_type = OrderType.GoodTillCancel,
-        _order_id = order_id2,
-        _side = OrderSide.SELL,
-        _price = 48,
-        _initial_quantity = 50
-    )
-    order_sell2 = Order(
-        _order_type = OrderType.GoodTillCancel,
-        _order_id = order_id3,
-        _side = OrderSide.SELL,
-        _price = 49,
-        _initial_quantity = 40
-    )
+
+    try:
+        while True:
+            order = generate_random_order(order_id)
+            ob.submit_add_order(order)
+            order_id += 1
+
+            time.sleep(0.5)
+
+    except KeyboardInterrupt:
+        print("Shutting Down...")
+
+    finally:
+        ob.shutdown()
+        print(ob.get_order_infos())
+        print("Order book shut down.")
+
+
+if __name__ == "__main__":
+    main()
     
-    order_sell3 = Order(
-        _order_type = OrderType.GoodTillCancel,
-        _order_id = order_id4,
-        _side = OrderSide.SELL,
-        _price = 49,
-        _initial_quantity = 10
-    )
-    order_book.add_order(order_sell1)
-    print(order_book.get_order_infos())
-    order_book.add_order(order_sell2)
-    print(order_book.get_order_infos())
-    order_book.add_order(order_buy)
-    print(order_book.get_order_infos())
-    order_book.add_order(order_sell3)
-    print(order_book.get_order_infos())
