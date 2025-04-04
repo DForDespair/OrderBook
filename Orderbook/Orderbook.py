@@ -304,7 +304,7 @@ class OrderBook:
             if now >= market_close:
                 market_close += timedelta(days=1)
 
-            sleep_time = (market_close - now).total_seconds() + 0.1  # 100 ms buffer
+            sleep_time = (market_close - now).total_seconds() + 0.1
 
             with self._shutdown_condition:
                 self._shutdown_condition.wait(timeout=sleep_time)

@@ -6,7 +6,7 @@ from Orderbook.Orderbook import OrderBook
 import logging
 
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s"
 )
 
@@ -29,7 +29,7 @@ def main():
             ob.submit_add_order(order)
             order_id += 1
 
-            time.sleep(0.5)
+            time.sleep(0.01)
 
     except KeyboardInterrupt:
         print("Shutting Down...")
