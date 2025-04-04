@@ -59,6 +59,10 @@ class OrderBook:
             best_bid = max(self._bids.keys())
             return price >= best_bid
         
+    def determine_aggressor(self, order1: Order, order2: Order) -> Order:
+        aggressor: Order = order1 if order1.timestamp < order2.timestamp else order2
+        return aggressor
+        
     def match_orders(self) -> List[Trade]:
         trades: List[Trade] = []
         logger.info(f"Starting order matching - bids: {len(self._bids)}, asks: {len(self._asks)}")
@@ -82,7 +86,9 @@ class OrderBook:
                 
                 bid.fill_order(quantity)
                 ask.fill_order(quantity)
-                logger.info(f"Matched {quantity} @ {bid.price} between BUY {bid.order_id} and SELL {ask.order_id}")
+                
+                aggressor = self.determine_aggressor(bid, ask)
+                logger.info(f"Matched {quantity} @ {aggressor.price} between BUY {bid.order_id} and SELL {ask.order_id}")
 
                 if bid.is_filled():
                     best_bids_queue.popleft()
@@ -94,8 +100,8 @@ class OrderBook:
                     del self._orders[ask.order_id]
                     logger.debug(f"Order {ask.order_id} fully filled and removed (SELL)")
     
-                bid_trade_info: TradeInfo = TradeInfo(bid.order_id, bid.price, quantity)
-                ask_trade_info: TradeInfo = TradeInfo(ask.order_id, ask.price, quantity)
+                bid_trade_info: TradeInfo = TradeInfo(bid.order_id, aggressor.price, quantity)
+                ask_trade_info: TradeInfo = TradeInfo(ask.order_id, aggressor.price, quantity)
                 trade: Trade = Trade(bid_trade_info, ask_trade_info)
                 trades.append(trade)
                 
@@ -120,7 +126,7 @@ class OrderBook:
                 logger.info(f"FillAndKill BUY order {order.order_id} could not be matched and was cancelled")
 
         if self._asks:
-            _, queue = max(self._asks.items())
+            _, queue = min(self._asks.items())
             order: Order = queue[0]
             if order.order_type == OrderType.FillAndKill:
                 self.cancel_order(order.order_id)
@@ -198,7 +204,7 @@ class OrderBook:
         return self.add_order(new_order)
 
     
-    def size(self):
+    def size(self) -> int:
         return len(self._orders)
     
     def get_order_infos(self) -> OrderBookLevelInfos:

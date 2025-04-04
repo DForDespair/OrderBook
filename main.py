@@ -38,12 +38,16 @@ if __name__ == "__main__":
     
     order_sell3 = Order(
         _order_type = OrderType.GoodTillCancel,
-        _order_id = order_id3,
+        _order_id = order_id4,
         _side = OrderSide.SELL,
         _price = 49,
         _initial_quantity = 10
     )
     order_book.add_order(order_sell1)
+    print(order_book.get_order_infos())
     order_book.add_order(order_sell2)
+    print(order_book.get_order_infos())
     order_book.add_order(order_buy)
+    print(order_book.get_order_infos())
     order_book.add_order(order_sell3)
+    print(order_book.get_order_infos())

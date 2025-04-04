@@ -1,5 +1,6 @@
 
 from dataclasses import dataclass
+from datetime import datetime, timezone
 
 
 @dataclass
@@ -56,6 +57,9 @@ class Trade:
     _bid_trade: TradeInfo
     _ask_trade: TradeInfo
     
+    def __post_init__(self):
+        self._timestamp = datetime.now(timezone.utc)
+    
     @property
     def bid_trade(self) -> TradeInfo:
         return self._bid_trade
@@ -63,3 +67,18 @@ class Trade:
     @property
     def ask_trade(self) -> TradeInfo:
         return self._ask_trade
+    
+    def timezone(self) -> datetime:
+        return self._timestamp
+    
+    def __repr__(self):
+        return (f"Trade("
+                f"bid={repr(self._bid_trade)}, "
+                f"ask={repr(self._ask_trade)}, "
+                f"timestamp={self._timestamp.isoformat()})")
+    
+    def __str__(self):
+        return (f"[TRADE] "
+                f"{self._bid_trade.quantity} @ {self._bid_trade.price} "
+                f"(Buyer: {self._bid_trade.order_id}, Seller: {self._ask_trade.order_id}) "
+                f"at {self._timestamp.strftime('%Y-%m-%d %H:%M:%S UTC')}")

@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from Order.OrderEnums import OrderType, OrderSide
+from datetime import datetime, timezone
 
 @dataclass
 class Order:
@@ -12,6 +13,7 @@ class Order:
 
     def __post_init__(self):
         self._remaining_quantity = self._initial_quantity
+        self._timestamp = datetime.now(timezone.utc)
         
     @property
     def order_type(self):
@@ -28,6 +30,10 @@ class Order:
     @property
     def price(self):
         return self._price
+    
+    @property
+    def timestamp(self):
+        return self._timestamp
 
     @property
     def initial_quantity(self):
@@ -97,10 +103,16 @@ class Order:
         self._remaining_quantity -= quantity
         
     def __repr__(self):
-        return (
-            f"Order(order_id={self.order_id}, side={self.side}, type={self.order_type}, "
-            f"price={self.price}, _initial_quantity={self.initial_quantity}, _remaining_quantity={self.remaining_quantity})"
-        )
-    
+        return (f"Order("
+                f"id={self.order_id}, "
+                f"type={self.order_type.name}, "
+                f"side={self.side.name}, "
+                f"price={self.price}, "
+                f"qty={self.initial_quantity}, "
+                f"remaining={self.remaining_quantity}, "
+                f"time={self.timestamp.isoformat()})")
+
     def __str__(self):
-        return repr(self)
+        return (f"[{self.side.name} #{self.order_id}] "
+                f"{self.remaining_quantity}/{self.initial_quantity} @ {self.price} "
+                f"({self.order_type.name}, {self.timestamp.strftime('%H:%M:%S')})")
