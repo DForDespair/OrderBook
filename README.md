@@ -3,7 +3,8 @@
 A high-performance, multithreaded limit order book engine written in Python. This project simulates an exchange-style matching engine that supports concurrent order placement, cancellation, and modification, while maintaining a thread-safe internal state and market depth representation.
 
 ### Example Visualization
-![Order Book Depth Chart](LiveOrderBook.mp4)
+
+[![Watch the demo](https://img.youtube.com/vi/xD8S5HcGbtY/hqdefault.jpg)](https://www.youtube.com/watch?v=xD8S5HcGbtY)
 
 ## Features
 
